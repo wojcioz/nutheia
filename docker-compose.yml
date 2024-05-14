@@ -9,4 +9,5 @@ services:
             - ./data:/home/jovyan/data
         environment:
             JUPYTER_ENABLE_LAB: "yes"
-            command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+            command: >
+                bash -c "pip install numpy plotly && start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
