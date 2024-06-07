@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  tensorflow:
+    image: tensorflow/tensorflow:latest
+    command: /bin/bash
+    volumes:
+      - ./model:/model
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true

@@ -1,6 +1,7 @@
 # My
-data/*.csv
-
+data-timeseries/*.csv
+*.deb
+data-llm
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
