@@ -33,5 +33,13 @@ services:
             - ./data-llm:/home/jovyan/data
         environment:
             JUPYTER_ENABLE_LAB: "yes"
+            NVIDIA_VISIBLE_DEVICES: "all"
             command: >
                 bash -c "python -m pip install huggingface_hub ipython "unsloth[colab] @ git+https://github.com/unslothai/unsloth.git" "unsloth[conda] @ git+https://github.com/unslothai/unsloth.git" && start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: all
+                          capabilities: [ gpu ]

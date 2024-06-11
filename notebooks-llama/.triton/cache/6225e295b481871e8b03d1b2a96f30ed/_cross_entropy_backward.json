@@ -1,0 +1,1 @@
+{"num_warps": 8, "num_stages": 3, "constants": {"6": 128256, "7": 4096}, "debug": null, "arch": 89, "device_type": "cuda", "shared": 0, "name": "_cross_entropy_backward_0d1d2d3d4d5d"}
