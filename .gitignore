@@ -2,6 +2,7 @@
 data-timeseries/*.csv
 *.deb
 data-llm
+llama3-7b-8bit/data-llm
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
