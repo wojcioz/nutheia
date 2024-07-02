@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama3-alpaca
+  namespace: fine-tune
+  labels:
+    app: llama3-alpaca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama3-alpaca
+  template:
+    metadata:
+      labels:
+        app: llama3-alpaca
+    spec:
+      containers:
+      - name: llama3-alpaca
+        image: 654654215330.dkr.ecr.eu-west-2.amazonaws.com/gpt-in-a-box:llama3-alpaca
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        env:
+          - name: HF_TOKEN
+            value: $HF_TOKEN

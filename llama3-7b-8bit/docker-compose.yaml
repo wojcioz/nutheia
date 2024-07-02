@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  gpt-in-a-box-fine-tuning:
+    build: .
+    environment:
+      - HF_USERNAME=${HF_USERNAME}
+      - HF_TOKEN=${HF_TOKEN}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
