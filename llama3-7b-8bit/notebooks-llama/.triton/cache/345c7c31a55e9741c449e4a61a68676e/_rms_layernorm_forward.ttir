@@ -1,0 +1,40 @@
+module {
+  tt.func public @_rms_layernorm_forward_0d1d2d3d4d5c6d7c8d9(%arg0: !tt.ptr<bf16> {tt.divisibility = 16 : i32}, %arg1: i32 {tt.divisibility = 16 : i32}, %arg2: !tt.ptr<bf16> {tt.divisibility = 16 : i32}, %arg3: i32 {tt.divisibility = 16 : i32}, %arg4: !tt.ptr<bf16> {tt.divisibility = 16 : i32}, %arg5: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg6: i32 {tt.divisibility = 16 : i32}, %arg7: f32) attributes {noinline = false} {
+    %cst = arith.constant dense<0.000000e+00> : tensor<4096xbf16>
+    %0 = tt.get_program_id x : i32
+    %1 = tt.make_range {end = 4096 : i32, start = 0 : i32} : tensor<4096xi32>
+    %2 = tt.splat %arg6 : (i32) -> tensor<4096xi32>
+    %3 = arith.cmpi slt, %1, %2 : tensor<4096xi32>
+    %4 = arith.muli %0, %arg1 : i32
+    %5 = tt.addptr %arg0, %4 : !tt.ptr<bf16>, i32
+    %6 = arith.muli %0, %arg3 : i32
+    %7 = tt.addptr %arg2, %6 : !tt.ptr<bf16>, i32
+    %8 = tt.addptr %arg5, %0 : !tt.ptr<f32>, i32
+    %9 = tt.splat %7 : (!tt.ptr<bf16>) -> tensor<4096x!tt.ptr<bf16>>
+    %10 = tt.addptr %9, %1 : tensor<4096x!tt.ptr<bf16>>, tensor<4096xi32>
+    %11 = tt.load %10, %3, %cst {cache = 1 : i32, evict = 1 : i32, isVolatile = false} : tensor<4096xbf16>
+    %12 = arith.extf %11 : tensor<4096xbf16> to tensor<4096xf32>
+    %13 = tt.splat %arg4 : (!tt.ptr<bf16>) -> tensor<4096x!tt.ptr<bf16>>
+    %14 = tt.addptr %13, %1 : tensor<4096x!tt.ptr<bf16>>, tensor<4096xi32>
+    %15 = tt.load %14, %3, %cst {cache = 1 : i32, evict = 1 : i32, isVolatile = false} : tensor<4096xbf16>
+    %16 = arith.mulf %12, %12 : tensor<4096xf32>
+    %17 = "tt.reduce"(%16) <{axis = 0 : i32}> ({
+    ^bb0(%arg8: f32, %arg9: f32):
+      %28 = arith.addf %arg8, %arg9 : f32
+      tt.reduce.return %28 : f32
+    }) : (tensor<4096xf32>) -> f32
+    %18 = arith.sitofp %arg6 : i32 to f32
+    %19 = arith.divf %17, %18 : f32
+    %20 = arith.addf %19, %arg7 : f32
+    %21 = tt.pure_extern_elementwise %20 {libname = "libdevice", libpath = "/opt/conda/lib/python3.11/site-packages/triton/language/../third_party/cuda/lib/libdevice.10.bc", symbol = "__nv_rsqrtf"} : (f32) -> f32
+    tt.store %8, %21 {cache = 1 : i32, evict = 1 : i32} : f32
+    %22 = tt.splat %21 : (f32) -> tensor<4096xf32>
+    %23 = arith.mulf %12, %22 : tensor<4096xf32>
+    %24 = arith.truncf %23 : tensor<4096xf32> to tensor<4096xbf16>
+    %25 = arith.mulf %24, %15 : tensor<4096xbf16>
+    %26 = tt.splat %5 : (!tt.ptr<bf16>) -> tensor<4096x!tt.ptr<bf16>>
+    %27 = tt.addptr %26, %1 : tensor<4096x!tt.ptr<bf16>>, tensor<4096xi32>
+    tt.store %27, %25, %3 {cache = 1 : i32, evict = 1 : i32} : tensor<4096xbf16>
+    tt.return
+  }
+}

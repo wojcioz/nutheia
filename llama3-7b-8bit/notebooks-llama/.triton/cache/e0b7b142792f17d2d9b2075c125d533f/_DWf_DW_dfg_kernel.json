@@ -1,0 +1,1 @@
+{"num_warps": 4, "num_stages": 3, "constants": {"4": 1024}, "debug": null, "arch": 89, "device_type": "cuda", "shared": 0, "name": "_DWf_DW_dfg_kernel_0d1d2d3d"}

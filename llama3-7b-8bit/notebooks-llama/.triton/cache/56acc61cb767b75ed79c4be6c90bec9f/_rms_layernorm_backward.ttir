@@ -1,0 +1,48 @@
+module {
+  tt.func public @_rms_layernorm_backward_0d1d2d3d4d5c6d7c8d9d10d11(%arg0: !tt.ptr<bf16> {tt.divisibility = 16 : i32}, %arg1: i32 {tt.divisibility = 16 : i32}, %arg2: !tt.ptr<bf16> {tt.divisibility = 16 : i32}, %arg3: i32 {tt.divisibility = 16 : i32}, %arg4: !tt.ptr<bf16> {tt.divisibility = 16 : i32}, %arg5: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg6: !tt.ptr<bf16> {tt.divisibility = 16 : i32}, %arg7: i32 {tt.divisibility = 16 : i32}, %arg8: i32 {tt.divisibility = 16 : i32}, %arg9: f32) attributes {noinline = false} {
+    %cst = arith.constant dense<0.000000e+00> : tensor<4096xbf16>
+    %0 = tt.get_program_id x : i32
+    %1 = tt.make_range {end = 4096 : i32, start = 0 : i32} : tensor<4096xi32>
+    %2 = tt.splat %arg8 : (i32) -> tensor<4096xi32>
+    %3 = arith.cmpi slt, %1, %2 : tensor<4096xi32>
+    %4 = arith.muli %0, %arg1 : i32
+    %5 = tt.addptr %arg0, %4 : !tt.ptr<bf16>, i32
+    %6 = arith.muli %0, %arg3 : i32
+    %7 = tt.addptr %arg2, %6 : !tt.ptr<bf16>, i32
+    %8 = tt.addptr %arg5, %0 : !tt.ptr<f32>, i32
+    %9 = tt.splat %5 : (!tt.ptr<bf16>) -> tensor<4096x!tt.ptr<bf16>>
+    %10 = tt.addptr %9, %1 : tensor<4096x!tt.ptr<bf16>>, tensor<4096xi32>
+    %11 = tt.load %10, %3, %cst {cache = 1 : i32, evict = 1 : i32, isVolatile = false} : tensor<4096xbf16>
+    %12 = arith.extf %11 : tensor<4096xbf16> to tensor<4096xf32>
+    %13 = tt.splat %7 : (!tt.ptr<bf16>) -> tensor<4096x!tt.ptr<bf16>>
+    %14 = tt.addptr %13, %1 : tensor<4096x!tt.ptr<bf16>>, tensor<4096xi32>
+    %15 = tt.load %14, %3, %cst {cache = 1 : i32, evict = 1 : i32, isVolatile = false} : tensor<4096xbf16>
+    %16 = arith.extf %15 : tensor<4096xbf16> to tensor<4096xf32>
+    %17 = tt.splat %arg4 : (!tt.ptr<bf16>) -> tensor<4096x!tt.ptr<bf16>>
+    %18 = tt.addptr %17, %1 : tensor<4096x!tt.ptr<bf16>>, tensor<4096xi32>
+    %19 = tt.load %18, %3, %cst {cache = 1 : i32, evict = 1 : i32, isVolatile = false} : tensor<4096xbf16>
+    %20 = arith.extf %19 : tensor<4096xbf16> to tensor<4096xf32>
+    %21 = tt.load %8 {cache = 1 : i32, evict = 1 : i32, isVolatile = false} : f32
+    %22 = tt.splat %21 : (f32) -> tensor<4096xf32>
+    %23 = arith.mulf %16, %22 : tensor<4096xf32>
+    %24 = arith.mulf %12, %20 : tensor<4096xf32>
+    %25 = arith.mulf %24, %23 : tensor<4096xf32>
+    %26 = "tt.reduce"(%25) <{axis = 0 : i32}> ({
+    ^bb0(%arg10: f32, %arg11: f32):
+      %37 = arith.addf %arg10, %arg11 : f32
+      tt.reduce.return %37 : f32
+    }) : (tensor<4096xf32>) -> f32
+    %27 = arith.sitofp %arg8 : i32 to f32
+    %28 = arith.divf %21, %27 : f32
+    %29 = tt.splat %27 : (f32) -> tensor<4096xf32>
+    %30 = arith.mulf %29, %24 : tensor<4096xf32>
+    %31 = tt.splat %26 : (f32) -> tensor<4096xf32>
+    %32 = arith.mulf %23, %31 : tensor<4096xf32>
+    %33 = arith.subf %30, %32 : tensor<4096xf32>
+    %34 = tt.splat %28 : (f32) -> tensor<4096xf32>
+    %35 = arith.mulf %34, %33 : tensor<4096xf32>
+    %36 = arith.truncf %35 : tensor<4096xf32> to tensor<4096xbf16>
+    tt.store %10, %36, %3 {cache = 1 : i32, evict = 1 : i32} : tensor<4096xbf16>
+    tt.return
+  }
+}

@@ -24,18 +24,37 @@ services:
     #         command: >
     #             bash -c "pip install torch accelerate peft bitsandbytes transformers trl && start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
 
-    jupyter-llama:
-        image: jupyter/scipy-notebook:latest
+    # jupyter-llama:
+    #     image: jupyter/scipy-notebook:latest
+    #     ports:
+    #         - 8888:8888
+    #     volumes:
+    #         - ./notebooks-llama:/home/jovyan
+    #         - ./data-llm:/home/jovyan/data
+    #     environment:
+    #         JUPYTER_ENABLE_LAB: "yes"
+    #         NVIDIA_VISIBLE_DEVICES: "all"
+    #         command: >
+    #             bash -c "python -m pip install huggingface_hub ipython "unsloth[colab] @ git+https://github.com/unslothai/unsloth.git" "unsloth[conda] @ git+https://github.com/unslothai/unsloth.git" && start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+    #     deploy:
+    #         resources:
+    #             reservations:
+    #                 devices:
+    #                     - driver: nvidia
+    #                       count: all
+    #                       capabilities: [ gpu ]
+    jupyter-llama-pytorch:
+        build: ./llama3-7b-8bit
         ports:
             - 8888:8888
         volumes:
-            - ./notebooks-llama:/home/jovyan
-            - ./data-llm:/home/jovyan/data
+            - ./llama3-7b-8bit/notebooks-llama:/app/notebooks
+            - ./llama3-7b-8bit/data-llm/instruct/data:/app/data
         environment:
             JUPYTER_ENABLE_LAB: "yes"
             NVIDIA_VISIBLE_DEVICES: "all"
             command: >
-                bash -c "python -m pip install huggingface_hub ipython "unsloth[colab] @ git+https://github.com/unslothai/unsloth.git" "unsloth[conda] @ git+https://github.com/unslothai/unsloth.git" && start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+                bash -c "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
         deploy:
             resources:
                 reservations:
